@@ -42,13 +42,6 @@ public class FormularioProyecto extends JPanel implements Formulario {
             throw new RuntimeException(e);
         }
 
-
-        jLabelNombre = new JLabel("Nombre");
-        jTextFieldNombre = new JTextField(20);
-
-        jLabelCantEmpleados = new JLabel("Empleados Necesarios");
-        jTextFieldCantEmpleados = new JTextField(20);
-
         agregarElementos();
 
         jButtonAgregarTarea = new JButton("Agregar Tarea");
@@ -94,6 +87,12 @@ public class FormularioProyecto extends JPanel implements Formulario {
 
     @Override
     public void agregarElementos() {
+
+        jLabelNombre = new JLabel("Nombre");
+        jTextFieldNombre = new JTextField(20);
+        jLabelCantEmpleados = new JLabel("Empleados Necesarios");
+        jTextFieldCantEmpleados = new JTextField(20);
+
         JPanel panelTexto = new JPanel(new GridLayout(2, 2));
         panelTexto.add(jLabelNombre);
         panelTexto.add(jTextFieldNombre);
@@ -101,7 +100,6 @@ public class FormularioProyecto extends JPanel implements Formulario {
         panelTexto.add(jTextFieldCantEmpleados);
 
         formularioProyecto.add(panelTexto);
-
     }
 
     public void agregarBotones() {
@@ -123,7 +121,6 @@ public class FormularioProyecto extends JPanel implements Formulario {
         estilo.estiloJTextField(jTextFieldCantEmpleados);
         estilo.estiloJButton(jButtonAgregarTarea);
         estilo.estiloJButton(jButtonAsignarEmpleados);
-        estilo.estiloJButton(jButtonGuardar);
     }
 
 

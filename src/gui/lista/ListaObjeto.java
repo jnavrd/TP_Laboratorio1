@@ -12,8 +12,7 @@ public abstract class ListaObjeto extends JPanel {
     PanelManager panel;
     JPanel listaObjeto;
     DefaultListModel<Object> listModelObjeto;
-    JButton jButtonAddObjeto;
-    JButton jButtonRefrescar;
+    JButton jButtonAddObjeto, jButtonRefrescar;
     public ListaObjeto(PanelManager panel) throws ServiceException {
         this.panel = panel;
         armarLista();

@@ -36,33 +36,39 @@ public class PanelManager {
         if(tipo == 1)
         {
             inicio = new Inicio(this);
+            jFrame.setTitle("Inicio");
             mostrar(inicio);
         }
         if(tipo == 2)
         {
             listaProyectos = new ListaProyectos(this);
+            jFrame.setTitle("Proyectos");
             mostrar(listaProyectos);
         }
         if(tipo == 3)
         {
             jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             formularioProyecto = new FormularioProyecto(this);
+            jFrame.setTitle("Nuevo Proyecto");
             mostrar(formularioProyecto);
         }
         if(tipo == 4)
         {
             listaEmpleados = new ListaEmpleados(this);
+            jFrame.setTitle("Empleados");
             mostrar(listaEmpleados);
         }
         if(tipo == 5)
         {
             jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             formularioEmpleado = new FormularioEmpleado(this);
+            jFrame.setTitle("Nuevo Empleado");
             mostrar(formularioEmpleado);
         }
         if(tipo == 6)
         {
             reporteProyectos = new ReporteProyectos(this);
+            jFrame.setTitle("Reporte de Proyectos");
             mostrar(reporteProyectos);
         }
     }
@@ -73,26 +79,31 @@ public class PanelManager {
         if(tipo == 1)
         {
             formularioTarea = new FormularioTarea(this, (Proyecto) objeto);
+            jFrame.setTitle("Nueva Tarea");
             mostrar(formularioTarea);
         }
         if(tipo == 2)
         {
             listaTareas = new ListaTareas(this, (Proyecto) objeto);
+            jFrame.setTitle("Tareas de " + ((Proyecto) objeto).getNombre());
             mostrar(listaTareas);
         }
         if(tipo == 3)
         {
             detalleTarea = new DetalleTarea((Tarea) objeto);
+            jFrame.setTitle(((Tarea) objeto).getTitulo());
             mostrar(detalleTarea);
         }
         if(tipo == 4)
         {
             listaEmpleados = new ListaEmpleadosAsignar(this, (Proyecto) objeto);
+            jFrame.setTitle("Empleados");
             mostrar(listaEmpleados);
         }
         if(tipo == 5)
         {
             detalleEmpleado = new DetalleEmpleado((Empleado) objeto);
+            jFrame.setTitle(((Empleado) objeto).getNombre());
             mostrar(detalleEmpleado);
         }
     }

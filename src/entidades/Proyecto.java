@@ -2,7 +2,6 @@ package entidades;
 
 import dao.DAOHistorialTrabajo;
 import dao.DAOTarea;
-import service.ServiceEmpleado;
 import service.ServiceException;
 import service.ServiceHistorialTrabajo;
 import service.ServiceTarea;
@@ -18,6 +17,7 @@ public class Proyecto {
     private ArrayList<Tarea> tareas;
     private ArrayList<Empleado> empleados;
     private int estado; //-1 por no empezado, 0 en curso, 1 terminado
+    ArrayList<HistorialTrabajo> historialProyecto;
 
 
     //constructores
@@ -69,21 +69,26 @@ public class Proyecto {
         return horasTotales;
     }
 
-    public void actualizarEstado() {
-        boolean tareasCompletadas = true;
+    public void actualizarEstadoIniciar() {
         for(Tarea tarea: tareas){
             if(tarea.getEstado() == 0)
             {
                 this.estado = 0;
-                return;
-            }
-            if(tarea.getEstado() != 2)
-            {
-                tareasCompletadas = false;
             }
         }
-        if(tareasCompletadas)
+    }
+
+    public void actualizarEstadoTerminar() {
+        boolean tareasTerminadas = false;
+        for(Tarea tarea: tareas){
+            if(tarea.getEstado() == 2)
+            {
+                tareasTerminadas = true;
+            }
+        }
+        if(tareasTerminadas) {
             this.estado = 2;
+        }
     }
 
     //TODO: calcular costo
@@ -92,18 +97,15 @@ public class Proyecto {
         serviceHistorialTrabajo = new ServiceHistorialTrabajo(new DAOHistorialTrabajo());
         int costo = 0;
 
-        Empleado empleado = new Empleado();
-
-        ArrayList<HistorialTrabajo> historialProyecto;
         historialProyecto = new ArrayList<>();
         try {
-            historialProyecto.add(serviceHistorialTrabajo.buscar(this.getId()));
+            historialProyecto = serviceHistorialTrabajo.buscarEnProyecto(this.getId());
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
         for (HistorialTrabajo historial : historialProyecto) {
             int horasTrabajadas = historial.getHorasTrabajadas();
-            costo += horasTrabajadas * empleado.getCostoHora();
+            costo += horasTrabajadas * historial.getEmpleado().getCostoHora();
         }
         return costo;
     }
@@ -162,11 +164,17 @@ public class Proyecto {
 
     @Override
     public String toString() {
+        return  nombre + '\'' +
+                ", estado=" + estado;
+    }
+
+    /*@Override
+    public String toString() {
         return "Proyecto{" +
-                "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", cantidadEmpleados=" + cantidadEmpleados +
+                ", tareas=" + tareas +
                 ", estado=" + estado +
                 '}';
-    }
+    }*/
 }

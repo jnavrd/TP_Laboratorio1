@@ -5,6 +5,7 @@ import entidades.Empleado;
 import entidades.Proyecto;
 import gui.PanelManager;
 import gui.estilos.EmpleadoListaRenderer;
+import gui.estilos.UtilidadEstilo;
 import gui.lista.ListaObjeto;
 import service.ServiceEmpleado;
 import service.ServiceException;
@@ -20,6 +21,7 @@ public class ListaEmpleados extends ListaObjeto {
     protected Proyecto proyecto;
     protected DefaultListModel<Empleado> listModelEmpleados;
     JButton jButtonAddEmpleado;
+    UtilidadEstilo estilo;
     public ListaEmpleados(PanelManager panel) throws ServiceException {
         super(panel);
     }

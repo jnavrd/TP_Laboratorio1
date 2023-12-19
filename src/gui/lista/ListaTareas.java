@@ -101,6 +101,7 @@ public class ListaTareas extends ListaObjeto {
         add(jButtonAssignEmpleado, BorderLayout.SOUTH);
     }
 
+
     @Override
     protected void refreshList() throws ServiceException {
         //limpio el list model

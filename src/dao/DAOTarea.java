@@ -47,13 +47,17 @@ public class DAOTarea implements IDAO<Tarea> {
         try {
             Class.forName(DB_JDBC_DRIVER);
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            preparedStatement = connection.prepareStatement("UPDATE Tarea SET titulo = ?, descripcion = ?, horasEstimadas = ?, horasReales = ?, estado = ? WHERE id = ?");
+            preparedStatement = connection.prepareStatement("UPDATE Tarea SET titulo = ?, descripcion = ?, horasEstimadas = ?, horasReales = ?, estado = ?, legempleado = ? WHERE id = ?");
             preparedStatement.setString(1, elemento.getTitulo());
             preparedStatement.setString(2, elemento.getDescripcion());
             preparedStatement.setInt(3, elemento.getHorasEstimadas());
             preparedStatement.setInt(4, elemento.getHorasReales());
             preparedStatement.setInt(5, elemento.getEstado());
-            preparedStatement.setInt(6, elemento.getId());
+            if(elemento.getEmpleado() == null)
+                preparedStatement.setNull(6, Types.INTEGER);
+            else
+                preparedStatement.setInt(6, elemento.getEmpleado().getLegajo());
+            preparedStatement.setInt(7, elemento.getId());
             int resultado = preparedStatement.executeUpdate();
             System.out.println("Se modifico  " + resultado);
         } catch (ClassNotFoundException | SQLException e) {
@@ -79,7 +83,10 @@ public class DAOTarea implements IDAO<Tarea> {
             Class.forName(DB_JDBC_DRIVER);
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             preparedStatement = connection.prepareStatement("UPDATE Tarea SET LegEmpleado = ? WHERE id = ?");
-            preparedStatement.setInt(1, elemento.getEmpleado().getLegajo());
+            if(elemento.getEmpleado() == null)
+                preparedStatement.setNull(1, Types.INTEGER);
+            else
+                preparedStatement.setInt(1, elemento.getEmpleado().getLegajo());
             preparedStatement.setInt(2, elemento.getId());
             int resultado = preparedStatement.executeUpdate();
             System.out.println("Se modifico  " + resultado);
@@ -95,6 +102,33 @@ public class DAOTarea implements IDAO<Tarea> {
             }
             catch (SQLException s){
                 throw new DAOException("No se pudo conectar");
+            }
+        }
+    }
+
+    public void eliminarEmpleado(Tarea elemento) throws ServiceException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            Class.forName(DB_JDBC_DRIVER);
+            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            preparedStatement = connection.prepareStatement("UPDATE Tarea SET LegEmpleado = ? WHERE id = ?");
+            preparedStatement.setNull(1, Types.INTEGER);
+            preparedStatement.setInt(2, elemento.getId());
+            int resultado = preparedStatement.executeUpdate();
+            System.out.println("Se modifico  " + resultado);
+        } catch (ClassNotFoundException | SQLException e) {
+            //tiro la excepcion para arriba para que le llegue al usuario
+            System.out.println(e.getMessage());
+            throw new ServiceException("Error al modificar ");
+        }finally {
+            //cierro conexion de base de datos
+            try {
+                preparedStatement.close();
+                connection.close();
+            }
+            catch (SQLException s){
+                throw new ServiceException("No se pudo conectar");
             }
         }
     }

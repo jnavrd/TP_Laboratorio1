@@ -87,6 +87,7 @@ public class DAOHistorialTrabajo implements IDAO<HistorialTrabajo> {
             while (rs.next()) {
                 HistorialTrabajo historialTrabajo = new HistorialTrabajo();
                 historialTrabajo.setHorasTrabajadas(rs.getInt("horasTrabajadas"));
+                historialTrabajo.setEmpleado(new DAOEmpleado().buscar(rs.getInt("empleadoId")));
                 historialTrabajos.add(historialTrabajo);
             }
         } catch (ClassNotFoundException | SQLException e) {
@@ -116,7 +117,7 @@ public class DAOHistorialTrabajo implements IDAO<HistorialTrabajo> {
     }
 
     @Override
-    public HistorialTrabajo buscar(int proyectoId) throws DAOException {
+    public HistorialTrabajo buscar(int id) throws DAOException {
         return null;
     }
 

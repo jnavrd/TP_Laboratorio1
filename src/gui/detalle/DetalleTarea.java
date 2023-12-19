@@ -9,6 +9,7 @@ import entidades.HistorialTrabajo;
 import entidades.Proyecto;
 import entidades.Tarea;
 import gui.PanelManager;
+import gui.estilos.UtilidadEstilo;
 import service.*;
 
 import javax.swing.*;
@@ -16,11 +17,12 @@ import java.awt.*;
 import java.util.ArrayList;
 
 //dependencias: Tarea, Empleado, HistorialTrabajo, ServiceTarea
-public class DetalleTarea extends JPanel {
+public class DetalleTarea extends JPanel implements Detalle {
     ServiceTarea serviceTarea;
     ServiceProyecto serviceProyecto;
     ServiceEmpleado serviceEmpleado;
     ServiceHistorialTrabajo serviceHistorialTrabajo;
+    Tarea tarea;
     PanelManager panel;
     HistorialTrabajo historialTrabajo;
     JPanel detalleTarea;
@@ -29,33 +31,30 @@ public class DetalleTarea extends JPanel {
     JTextField jTextFieldTitulo, jTextFieldDescripcion, jTextFieldEstimacionHoras, jTextFieldEmpleado;
     JComboBox<Empleado> jComboBoxEmpleados;
     JButton jButtonIniciarTarea, jButtonPausarTarea, jButtonFinalizarTarea, jButtonEditar, jButtonGuardar, jButtonEliminar;
-    //temporal
     ArrayList<Empleado> empleados = new ArrayList<>();
+    UtilidadEstilo estilo;
     public DetalleTarea(Tarea tarea) {
         this.panel = panel;
-        armarTarea(tarea);
+        this.tarea = tarea;
+        armarTarea();
     }
 
-    public void armarTarea(Tarea tarea)
+    public void armarTarea()
     {
         serviceTarea = new ServiceTarea(new DAOTarea());
         serviceEmpleado = new ServiceEmpleado(new DAOEmpleado());
         serviceProyecto = new ServiceProyecto(new DAOProyecto());
 
+
         detalleTarea = new JPanel();
         detalleTarea.setLayout(new BoxLayout(detalleTarea, BoxLayout.Y_AXIS));
-
-        jLabelTitulo = new JLabel("Titulo:");
-        jLabelDescripcion = new JLabel("Descripcion:");
-        jLabelEstimacionHoras = new JLabel("Horas estimadas:");
-        jLabelEmpleado = new JLabel("Empleado:");
 
         jButtonIniciarTarea = new JButton("Iniciar");
         jButtonPausarTarea = new JButton("Pausar");
         jButtonFinalizarTarea = new JButton("Finalizar");
 
         JPanel jPanelBotonesArriba = new JPanel(); //botones de iniciar, pausar, finalizar
-        jPanelBotonesArriba = new JPanel(new GridLayout(3,1));
+        jPanelBotonesArriba = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         jPanelBotonesArriba.add(jButtonIniciarTarea);
         jPanelBotonesArriba.add(jButtonPausarTarea);
@@ -74,22 +73,7 @@ public class DetalleTarea extends JPanel {
             jButtonFinalizarTarea.addActionListener(e -> terminarTarea(tarea));
         }
 
-        jTextFieldTitulo = new JTextField(tarea.getTitulo());
-        jTextFieldTitulo.setEditable(false);
-        jTextFieldDescripcion = new JTextField(tarea.getDescripcion());
-        jTextFieldDescripcion.setEditable(false);
-        jTextFieldEstimacionHoras = new JTextField(String.valueOf(tarea.getHorasEstimadas()));
-        jTextFieldEstimacionHoras.setEditable(false);
-        if(tarea.getEmpleado() == null) {
-            jTextFieldEmpleado = new JTextField("No asignado");
-        }
-        else {
-            jTextFieldEmpleado = new JTextField(tarea.getEmpleado().getNombre());
-        }
-        jTextFieldEmpleado.setEditable(false);
-
-
-        JPanel jPanelBotonesAbajo = new JPanel(new GridLayout(1,3)); //botones de editar, guardar y eliminar
+        JPanel jPanelBotonesAbajo = new JPanel(new FlowLayout(FlowLayout.CENTER)); //botones de editar, guardar y eliminar
 
         jButtonEditar = new JButton("Editar");
         jButtonEditar.addActionListener(e -> {
@@ -142,16 +126,11 @@ public class DetalleTarea extends JPanel {
         jPanelBotonesAbajo.add(jButtonEditar);
         jPanelBotonesAbajo.add(jButtonEliminar);
 
-        detalleTarea.add(jPanelBotonesArriba, BorderLayout.EAST);
-        detalleTarea.add(jLabelTitulo);
-        detalleTarea.add(jTextFieldTitulo);
-        detalleTarea.add(jLabelDescripcion);
-        detalleTarea.add(jTextFieldDescripcion);
-        detalleTarea.add(jLabelEstimacionHoras);
-        detalleTarea.add(jTextFieldEstimacionHoras);
-        detalleTarea.add(jLabelEmpleado);
-        detalleTarea.add(jTextFieldEmpleado);
+        detalleTarea.add(jPanelBotonesArriba, BorderLayout.NORTH);
+        agregarElementos();
         detalleTarea.add(jPanelBotonesAbajo, BorderLayout.CENTER);
+
+        darEstilo();
 
         setLayout(new BorderLayout());
         add(detalleTarea, BorderLayout.CENTER);
@@ -181,11 +160,13 @@ public class DetalleTarea extends JPanel {
             Empleado empleadoSeleccionado = (Empleado) jComboBoxEmpleados.getSelectedItem();
             tarea.setEmpleado(empleadoSeleccionado);
             tarea.setEstado(0);
-            tarea.getProyecto().actualizarEstado();
+            tarea.getProyecto().actualizarEstadoIniciar();
+            tarea.getEmpleado().setLibre(false);
             try {
                 serviceTarea.modificar(tarea);
                 serviceTarea.modificarEmpleado(tarea);
                 serviceProyecto.modificar(tarea.getProyecto());
+                serviceEmpleado.modificar(tarea.getEmpleado());
             } catch (ServiceException ex) {
                 throw new RuntimeException(ex);
             }
@@ -216,19 +197,23 @@ public class DetalleTarea extends JPanel {
 
             tarea.setHorasReales(horasReales);
             tarea.setEstado(1);
-
-            agregarAlHistorial(tarea.getProyecto(), tarea.getEmpleado(), tarea, Integer.parseInt(jTextFieldHorasTrabajadas.getText()));
-
-            tarea.setEmpleado(null);
+            tarea.getEmpleado().setLibre(true);
 
             try {
+                agregarAlHistorial(tarea.getProyecto(), tarea.getEmpleado(), tarea, Integer.parseInt(jTextFieldHorasTrabajadas.getText()));
+                serviceEmpleado.modificar(tarea.getEmpleado());
                 serviceTarea.modificar(tarea);
+
+                tarea.setEmpleado(null);
+
                 serviceTarea.modificarEmpleado(tarea);
             } catch (ServiceException ex) {
                 throw new RuntimeException(ex);
             }
             jDialog.dispose();
         });
+
+
         jDialog.getContentPane().add(jLabelHorasTrabajadas);
         jDialog.getContentPane().add(jTextFieldHorasTrabajadas);
         jDialog.getContentPane().add(jButtonAceptar);
@@ -252,18 +237,22 @@ public class DetalleTarea extends JPanel {
 
             tarea.setHorasReales(horasReales);
             tarea.setEstado(2);
-            tarea.getProyecto().actualizarEstado();
+            tarea.getEmpleado().setLibre(true);
+            tarea.getProyecto().actualizarEstadoTerminar();
 
             agregarAlHistorial(tarea.getProyecto(), tarea.getEmpleado(), tarea, Integer.parseInt(jTextFieldHorasTrabajadas.getText()));
 
-            tarea.setEmpleado(null);
-            
             try {
                 serviceTarea.modificar(tarea);
                 serviceProyecto.modificar(tarea.getProyecto());
+                serviceEmpleado.modificar(tarea.getEmpleado());
+
             } catch (ServiceException ex) {
                 throw new RuntimeException(ex);
             }
+
+            tarea.setEmpleado(null);
+
             jDialog.dispose();
         });
         jDialog.getContentPane().add(jLabelHorasTrabajadas);
@@ -293,5 +282,57 @@ public class DetalleTarea extends JPanel {
         jDialog.setLocationRelativeTo(null);
 
         return jDialog;
+    }
+
+    @Override
+    public void agregarElementos() {
+        jLabelTitulo = new JLabel("Titulo:");
+        jLabelDescripcion = new JLabel("Descripcion:");
+        jLabelEstimacionHoras = new JLabel("Horas estimadas:");
+        jLabelEmpleado = new JLabel("Empleado:");
+
+        jTextFieldTitulo = new JTextField(tarea.getTitulo());
+        jTextFieldTitulo.setEditable(false);
+        jTextFieldDescripcion = new JTextField(tarea.getDescripcion());
+        jTextFieldDescripcion.setEditable(false);
+        jTextFieldEstimacionHoras = new JTextField(String.valueOf(tarea.getHorasEstimadas()));
+        jTextFieldEstimacionHoras.setEditable(false);
+        if(tarea.getEmpleado() == null) {
+            jTextFieldEmpleado = new JTextField("No asignado");
+        }
+        else {
+            jTextFieldEmpleado = new JTextField(tarea.getEmpleado().getNombre());
+        }
+        jTextFieldEmpleado.setEditable(false);
+
+        JPanel panelTexto = new JPanel(new GridLayout(4,2));
+        panelTexto.add(jLabelTitulo);
+        panelTexto.add(jTextFieldTitulo);
+        panelTexto.add(jLabelDescripcion);
+        panelTexto.add(jTextFieldDescripcion);
+        panelTexto.add(jLabelEstimacionHoras);
+        panelTexto.add(jTextFieldEstimacionHoras);
+        panelTexto.add(jLabelEmpleado);
+        panelTexto.add(jTextFieldEmpleado);
+
+        panelTexto.setMaximumSize(new Dimension(panelTexto.getMaximumSize().width, Integer.MAX_VALUE));
+
+        detalleTarea.add(panelTexto, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void darEstilo() {
+        estilo = new UtilidadEstilo();
+        estilo.estiloJLabel(jLabelTitulo);
+        estilo.estiloJLabel(jLabelDescripcion);
+        estilo.estiloJLabel(jLabelEstimacionHoras);
+        estilo.estiloJLabel(jLabelEmpleado);
+        estilo.estiloJTextField(jTextFieldTitulo);
+        estilo.estiloJTextField(jTextFieldDescripcion);
+        estilo.estiloJTextField(jTextFieldEstimacionHoras);
+        estilo.estiloJTextField(jTextFieldEmpleado);
+        estilo.estiloJButton(jButtonIniciarTarea);
+        estilo.estiloJButton(jButtonPausarTarea);
+        estilo.estiloJButton(jButtonFinalizarTarea);
     }
 }

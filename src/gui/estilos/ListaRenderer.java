@@ -11,6 +11,8 @@ public abstract class ListaRenderer<T> extends JPanel implements ListCellRendere
         setLayout(new BorderLayout());
 
         jLabel = new JLabel();
+        jLabel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
+
         jPanel = new JPanel(new BorderLayout());
         jPanel.add(jLabel, BorderLayout.CENTER);
 
@@ -35,6 +37,8 @@ public abstract class ListaRenderer<T> extends JPanel implements ListCellRendere
         setFont(new Font("Arial", Font.PLAIN, 16));
         setPreferredSize(new Dimension(200, 100));
         setOpaque(true);
+
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         return this;
     }

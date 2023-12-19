@@ -5,7 +5,6 @@ import entidades.Empleado;
 import entidades.Proyecto;
 import gui.PanelManager;
 import gui.estilos.EmpleadoListaRenderer;
-import gui.lista.ListaEmpleados;
 import service.ServiceEmpleado;
 import service.ServiceException;
 
@@ -29,7 +28,6 @@ public class ListaEmpleadosAsignar extends ListaEmpleados {
         for(Empleado empleado: empleados)
         {
             listModelEmpleados.addElement(empleado);
-            System.out.println("listaasignar" + empleado);
         }
     }
 

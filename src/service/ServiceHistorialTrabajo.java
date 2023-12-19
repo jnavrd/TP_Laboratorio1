@@ -4,6 +4,8 @@ import dao.DAOException;
 import dao.DAOHistorialTrabajo;
 import entidades.HistorialTrabajo;
 
+import java.util.ArrayList;
+
 public class ServiceHistorialTrabajo {
     private DAOHistorialTrabajo daoHistorialTrabajo;
 
@@ -27,6 +29,17 @@ public class ServiceHistorialTrabajo {
         try
         {
             return daoHistorialTrabajo.buscar(id);
+        } catch (DAOException d)
+        {
+            throw new ServiceException(d.getMessage());
+        }
+    }
+
+    public ArrayList<HistorialTrabajo> buscarEnProyecto(int idProyecto) throws ServiceException
+    {
+        try
+        {
+            return daoHistorialTrabajo.buscarEnProyecto(idProyecto);
         } catch (DAOException d)
         {
             throw new ServiceException(d.getMessage());

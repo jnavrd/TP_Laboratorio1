@@ -5,23 +5,35 @@ import java.awt.*;
 
 public class UtilidadEstilo {
 
-    public static final Font LABEL_FONT = new Font("Arial", Font.BOLD, 14);
-    public static final Color LABEL_COLOR = new Color(100, 149, 237); // Cornflower blue
-    public static final Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 14);
-    public static final Color TEXT_FIELD_COLOR = new Color(255, 255, 255); // White
+    public Font LABEL_FONT = new Font("Arial", Font.BOLD, 18);
+    public Color LABEL_COLOR = new Color(114, 115, 117); // gris oscuro
+    public Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 14);
+    public Color TEXT_FIELD_COLOR = new Color(235, 236, 237); // gris claro
+    public Font COMBO_BOX_FONT = new Font("Arial", Font.PLAIN, 14);
+    public Color COMBO_BOX_COLOR = new Color(235, 236, 237); // gris claro
 
-    public static void estiloJLabel(JLabel label) {
+    public void estiloJLabel(JLabel label) {
         label.setFont(LABEL_FONT);
         label.setForeground(LABEL_COLOR);
+        label.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
     }
 
-    public static void estiloJTextField(JTextField textField) {
+    public void estiloJTextField(JTextField textField) {
         textField.setFont(TEXT_FIELD_FONT);
         textField.setBackground(TEXT_FIELD_COLOR);
+        textField.setMargin(new Insets(0, 10, 0, 0));
+        textField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createEmptyBorder(0, 10, 0, 0) // Add a 10-pixel padding to the left
+        ));
     }
 
-    public static void estiloJButton(JButton button) {
-        button.setFont(LABEL_FONT);
-        button.setBackground(LABEL_COLOR);
+    public void estiloJButton(JButton button) {
+        button.setMaximumSize(button.getPreferredSize());
+    }
+
+    public void estiloJComboBox(JComboBox comboBox) {
+            comboBox.setFont(COMBO_BOX_FONT);
+        comboBox.setBackground(COMBO_BOX_COLOR);
     }
 }

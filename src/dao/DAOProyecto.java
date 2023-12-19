@@ -146,7 +146,6 @@ public class DAOProyecto implements IDAO<Proyecto> {
                 proyecto.setNombre(rs.getString("nombre"));
                 proyecto.setCantidadEmpleados(rs.getInt("cantempleados"));
                 proyecto.setEstado(rs.getInt("estado"));
-
             }
         } catch (ClassNotFoundException | SQLException e) {
             //tiro la excepcion para arriba para que le llegue al usuario
@@ -186,7 +185,6 @@ public class DAOProyecto implements IDAO<Proyecto> {
                 proyecto.setTareas(new DAOTarea().buscarEnProyecto(proyecto.getId()));
                 proyecto.setEmpleados(new DAOEmpleado().buscarEnProyecto(proyecto.getId()));
                 proyectos.add(proyecto);
-                System.out.println("DAOProyecto: " + proyecto);
             }
         } catch (ClassNotFoundException | SQLException e) {
             //tiro la excepcion para arriba para que le llegue al usuario
